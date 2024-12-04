@@ -135,13 +135,78 @@ bool SortingAlgorithm::stepBubbleSort() {
     return true;
 }
 
-// Placeholder implementations for other algorithms
 bool SortingAlgorithm::stepQuickSort() {
-    // TODO: Implement quick sort step
-    m_finished = true;
-    return false;
+    if (m_state.array.empty()) return false;
+    
+    // Initialize partition range
+    if (m_auxArray.empty()) {
+        m_auxArray.push_back(0);  // left boundary
+        m_auxArray.push_back(m_state.array.size() - 1);  // right boundary
+        m_currentIndex = m_auxArray[0];  // pivot index
+        m_compareIndex = m_currentIndex + 1;  // scanning index
+        m_partitionIndex = m_currentIndex;  // final pivot position
+    }
+    
+    // If we've completed the current partition
+    if (m_compareIndex > m_auxArray[1]) {
+        // Swap pivot to its final position
+        if (m_currentIndex != m_partitionIndex) {
+            std::swap(m_state.array[m_currentIndex], m_state.array[m_partitionIndex]);
+            m_state.swaps++;
+            
+            // Update visualization state
+            m_state.highlightIndices = {m_currentIndex, m_partitionIndex};
+            return true;
+        }
+        
+        // Push sub-partitions onto stack
+        int pivotPos = m_partitionIndex;
+        if (pivotPos - 1 > m_auxArray[0]) {  // Left partition
+            m_auxArray.push_back(m_auxArray[0]);
+            m_auxArray.push_back(pivotPos - 1);
+        }
+        if (pivotPos + 1 < m_auxArray[1]) {  // Right partition
+            m_auxArray.push_back(pivotPos + 1);
+            m_auxArray.push_back(m_auxArray[1]);
+        }
+        
+        // Pop current partition
+        m_auxArray.erase(m_auxArray.begin());
+        m_auxArray.erase(m_auxArray.begin());
+        
+        // If no more partitions, we're done
+        if (m_auxArray.empty()) {
+            m_finished = true;
+            return false;
+        }
+        
+        // Setup next partition
+        m_currentIndex = m_auxArray[0];
+        m_compareIndex = m_currentIndex + 1;
+        m_partitionIndex = m_currentIndex;
+        
+        // Update visualization state
+        m_state.highlightIndices = {m_currentIndex};
+        return true;
+    }
+    
+    // Compare current element with pivot
+    m_state.comparisons++;
+    if (m_state.array[m_compareIndex] < m_state.array[m_currentIndex]) {
+        m_partitionIndex++;
+        if (m_partitionIndex != m_compareIndex) {
+            std::swap(m_state.array[m_partitionIndex], m_state.array[m_compareIndex]);
+            m_state.swaps++;
+        }
+    }
+    
+    // Update visualization state
+    m_state.highlightIndices = {m_currentIndex, m_compareIndex, m_partitionIndex};
+    m_compareIndex++;
+    return true;
 }
 
+// Placeholder implementations for other algorithms
 bool SortingAlgorithm::stepMergeSort() {
     // TODO: Implement merge sort step
     m_finished = true;

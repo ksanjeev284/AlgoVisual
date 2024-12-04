@@ -31,6 +31,13 @@ public:
     const AlgorithmState& getState() const { return m_state; }
     bool isFinished() const { return m_finished; }
     std::string getAlgorithmName() const;
+    AlgorithmType getAlgorithmType() const { return m_currentAlgorithm; }
+
+    // Getters for visualization state
+    int getCurrentIndex() const { return m_currentIndex; }
+    int getCompareIndex() const { return m_compareIndex; }
+    int getPartitionIndex() const { return m_partitionIndex; }
+    const std::vector<int>& getAuxArray() const { return m_auxArray; }
 
 private:
     void initQuickSort();
